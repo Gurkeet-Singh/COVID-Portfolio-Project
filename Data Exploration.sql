@@ -171,3 +171,64 @@ JOIN public."CovidVaccinations" vac
 	AND vac.date = dea.date
 WHERE dea.continent IS NOT NULL
 -- ORDER BY 2,3;
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- New tables with correct locations  
+SELECT *
+INTO CovidDeathsCleaned
+FROM "CovidDeaths"
+WHERE continent IS NOT NULL
+
+SELECT *
+INTO CovidVaccinatedCleaned
+FROM "CovidDeaths"
+WHERE continent IS NOT NULL
+
+
+SELECT location, MAX(date)
+INTO vaccinated_today
+FROM covidvaccinationscleaned
+GROUP BY 1
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- New table for cases visualization
+DROP TABLE IF EXISTS continent_cases;
+SELECT continent, location, MAX(total_cases)
+INTO continent_cases
+FROM "CovidDeaths"
+WHERE continent IS NOT NULL
+GROUP BY 1,2;
+
+SELECT continent, SUM(max)
+FROM continent_cases
+GROUP BY 1
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- New table for death visualization
+DROP TABLE IF EXISTS continent_deaths;
+SELECT continent, location, MAX(total_deaths) AS deaths
+INTO continent_deaths
+FROM "CovidDeaths"
+WHERE continent IS NOT NULL
+GROUP BY 1,2;
+
+SELECT continent, SUM(deaths)
+FROM continent_deaths
+GROUP BY 1;
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- New table for vaccine visualization
+DROP TABLE IF EXISTS continent_vaccines;
+SELECT continent, location, MAX(total_vaccinations) AS deaths
+INTO continent_vaccines
+FROM "CovidVaccinations"
+WHERE continent IS NOT NULL
+GROUP BY 1,2;
+
+SELECT continent, SUM(deaths)
+FROM continent_vaccines
+GROUP BY 1;
